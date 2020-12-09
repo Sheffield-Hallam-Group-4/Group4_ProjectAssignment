@@ -8,68 +8,91 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Group_Project.Models;
 using Group_Project1.Data;
+using System.Data.SqlClient;
+using Login_Session.Pages.DatabaseConnection;
 
 namespace Group_Project1.Pages.Customers
 {
     public class EditModel : PageModel
     {
-        private readonly Group_Project1.Data.Group_Project1Context _context;
-
-        public EditModel(Group_Project1.Data.Group_Project1Context context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
-        public Customer Customer { get; set; }
+        public Customer CustomerRec { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public IActionResult OnGet(int? id)
         {
-            if (id == null)
+            DatabaseConnect dbstring = new DatabaseConnect(); //creating an object from the class
+            string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+            Console.WriteLine(DbConnection);
+            SqlConnection conn = new SqlConnection(DbConnection);
+            conn.Open();
+
+
+
+            CustomerRec = new Customer();
+
+            using (SqlCommand command = new SqlCommand())
             {
-                return NotFound();
+                command.Connection = conn;
+                command.CommandText = "SELECT * FROM Customer WHERE Id = @ID";
+
+                command.Parameters.AddWithValue("@ID", id);
+                Console.WriteLine("The id : " + id);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    CustomerRec.Id = reader.GetInt32(0);
+                    CustomerRec.CustomerID = reader.GetString(1);
+                    CustomerRec.CustomerName = reader.GetString(2);
+                    CustomerRec.CustomerLastName = reader.GetString(3);
+                    CustomerRec.Email = reader.GetString(4);
+                    CustomerRec.Password = reader.GetString(5);
+                }
+
+
             }
 
-            Customer = await _context.Customer.FirstOrDefaultAsync(m => m.Id == id);
+            conn.Close();
 
-            if (Customer == null)
-            {
-                return NotFound();
-            }
             return Page();
+
         }
 
-        public async Task<IActionResult> OnPostAsync()
+
+        public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
+            DatabaseConnect dbstring = new DatabaseConnect();
+            string DbConnection = dbstring.DatabaseString();
+            Console.WriteLine(DbConnection);
+            SqlConnection conn = new SqlConnection(DbConnection);
+            conn.Open();
+
+            Console.WriteLine("Customer ID : " + CustomerRec.Id);
+            Console.WriteLine("Cusomter's Customer ID : " + CustomerRec.CustomerID);
+            Console.WriteLine("Customer First Name : " + CustomerRec.CustomerName);
+            Console.WriteLine("Customer Last Name : " + CustomerRec.CustomerLastName);
+            Console.WriteLine("Customer Email : " + CustomerRec.Email);
+            Console.WriteLine("Customer Password : " + CustomerRec.Password);
+
+            using (SqlCommand command = new SqlCommand())
             {
-                return Page();
+                command.Connection = conn;
+                command.CommandText = "UPDATE Customer SET CustomerID = @CID, CustomerName = @CName, CustomerLastName = @CLName, Email = @Email, Password = @PSWD WHERE Id = @ID";
+
+                command.Parameters.AddWithValue("@ID", CustomerRec.Id);
+                command.Parameters.AddWithValue("@CID", CustomerRec.CustomerID);
+                command.Parameters.AddWithValue("@CName", CustomerRec.CustomerName);
+                command.Parameters.AddWithValue("@CLName", CustomerRec.CustomerLastName);
+                command.Parameters.AddWithValue("@Email", CustomerRec.Email);
+                command.Parameters.AddWithValue("@PSWD", CustomerRec.Password);
+
+                command.ExecuteNonQuery();
             }
 
-            _context.Attach(Customer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CustomerExists(Customer.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            conn.Close();
 
             return RedirectToPage("./Index");
-        }
-
-        private bool CustomerExists(int id)
-        {
-            return _context.Customer.Any(e => e.Id == id);
         }
     }
 }
