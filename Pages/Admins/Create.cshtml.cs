@@ -48,7 +48,7 @@ namespace Group_Project1.Pages.Admins
 
                 command.ExecuteNonQuery();
             }
-         return RedirectToPage("./Index");
+            return RedirectToPage("./Index");
         }
     }
 }

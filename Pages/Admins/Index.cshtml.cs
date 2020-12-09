@@ -39,12 +39,14 @@ namespace Group_Project1.Pages.Admins
 
                 while (reader.Read())
                 {
-                    Admin record = new Admin(); //a local var to hold a record temporarily
-                    record.Id = reader.GetInt32(0); //getting the first field from the table
-                    record.AdminID = reader.GetString(1); //getting the second field from the table
-                    record.AdminName = reader.GetString(2); //getting the third field from the table
-                    record.AdminLastName = reader.GetString(3);
-                    record.Email = reader.GetString(4);
+                    Admin record = new Admin
+                    {
+                        Id = reader.GetInt32(0), //getting the first field from the table
+                        AdminID = reader.GetString(1), //getting the second field from the table
+                        AdminName = reader.GetString(2), //getting the third field from the table
+                        AdminLastName = reader.GetString(3),
+                        Email = reader.GetString(4)
+                    }; //a local var to hold a record temporarily
 
                     AdminRec.Add(record); //adding the single record into the list
                 }

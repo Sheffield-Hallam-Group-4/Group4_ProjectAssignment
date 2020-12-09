@@ -4,72 +4,94 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Group_Project.Models;
 using Group_Project1.Data;
+using System.Data.SqlClient;
+using Login_Session.Pages.DatabaseConnection;
 
 namespace Group_Project1.Pages.Admins
 {
     public class EditModel : PageModel
     {
-        private readonly Group_Project1.Data.Group_Project1Context _context;
-
-        public EditModel(Group_Project1.Data.Group_Project1Context context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
-        public Admin Admin { get; set; }
+        public Admin AdminRec { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public IActionResult OnGet(int? id)
         {
-            if (id == null)
+            DatabaseConnect dbstring = new DatabaseConnect(); //creating an object from the class
+            string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+            Console.WriteLine(DbConnection);
+            SqlConnection conn = new SqlConnection(DbConnection);
+            conn.Open();
+
+
+
+            AdminRec = new Admin();
+
+            using (SqlCommand command = new SqlCommand())
             {
-                return NotFound();
+                command.Connection = conn;
+                command.CommandText = "SELECT * FROM Admin WHERE Id = @ID";
+
+                command.Parameters.AddWithValue("@ID", id);
+                Console.WriteLine("The id : " + id);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    AdminRec.Id = reader.GetInt32(0);
+                    AdminRec.AdminID = reader.GetString(1);
+                    AdminRec.AdminName = reader.GetString(2);
+                    AdminRec.AdminLastName = reader.GetString(3);
+                    AdminRec.Email = reader.GetString(4);
+                    AdminRec.Password = reader.GetString(5);
+                }
+
+
             }
 
-            Admin = await _context.Admin.FirstOrDefaultAsync(m => m.Id == id);
+            conn.Close();
 
-            if (Admin == null)
-            {
-                return NotFound();
-            }
             return Page();
+
         }
 
-        public async Task<IActionResult> OnPostAsync()
+
+        public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
+            DatabaseConnect dbstring = new DatabaseConnect();
+            string DbConnection = dbstring.DatabaseString();
+            Console.WriteLine(DbConnection);
+            SqlConnection conn = new SqlConnection(DbConnection);
+            conn.Open();
+
+            Console.WriteLine("Admin ID : " + AdminRec.Id);
+            Console.WriteLine("Admin's Admin ID : " + AdminRec.AdminID);
+            Console.WriteLine("Admin First Name : " + AdminRec.AdminName);
+            Console.WriteLine("Admin Last Name : " + AdminRec.AdminLastName);
+            Console.WriteLine("Admin Email : " + AdminRec.Email);
+            Console.WriteLine("Admin Password : " + AdminRec.Password);
+
+            using (SqlCommand command = new SqlCommand())
             {
-                return Page();
+                command.Connection = conn;
+                command.CommandText = "UPDATE Admin SET AdminID = @AdminID, AdminName = @AdminName, AdminLastName = @AdminLName, Email = @Email, Password = @PSWD WHERE Id = @ID";
+
+                command.Parameters.AddWithValue("@ID", AdminRec.Id);
+                command.Parameters.AddWithValue("@AdminID", AdminRec.AdminID);
+                command.Parameters.AddWithValue("@AdminName", AdminRec.AdminName);
+                command.Parameters.AddWithValue("@AdminLName", AdminRec.AdminLastName);
+                command.Parameters.AddWithValue("@Email", AdminRec.Email);
+                command.Parameters.AddWithValue("@PSWD", AdminRec.Password);
+
+                command.ExecuteNonQuery();
             }
 
-            _context.Attach(Admin).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AdminExists(Admin.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            conn.Close();
 
             return RedirectToPage("./Index");
-        }
-
-        private bool AdminExists(int id)
-        {
-            return _context.Admin.Any(e => e.Id == id);
         }
     }
 }
