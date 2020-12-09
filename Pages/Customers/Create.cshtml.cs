@@ -7,36 +7,49 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Group_Project.Models;
 using Group_Project1.Data;
+using System.Data.SqlClient;
+using Login_Session.Pages.DatabaseConnection;
+using System.Data.Common;
 
 namespace Group_Project1.Pages.Customers
 {
     public class CreateModel : PageModel
     {
-        private readonly Group_Project1.Data.Group_Project1Context _context;
-
-        public CreateModel(Group_Project1.Data.Group_Project1Context context)
-        {
-            _context = context;
-        }
-
-        public IActionResult OnGet()
-        {
-            return Page();
-        }
-
         [BindProperty]
         public Customer Customer { get; set; }
 
-        public async Task<IActionResult> OnPostAsync()
+        public void OnGet()
         {
-            if (!ModelState.IsValid)
+        }
+
+        public IActionResult OnPost()
+        {
+
+            DatabaseConnect dbstring = new DatabaseConnect(); //creating an object from the class
+            string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+            Console.WriteLine(DbConnection);
+            SqlConnection conn = new SqlConnection(DbConnection);
+            conn.Open();
+
+            using (SqlCommand command = new SqlCommand())
             {
-                return Page();
+                command.Connection = conn;
+                command.CommandText = @"INSERT INTO Customer (CustomerID, CustomerName, CustomerLastName, Email, Password) VALUES (@CID, @CName, @CLName, @Email, @PSWD)";
+
+                command.Parameters.AddWithValue("@CID", Customer.CustomerID);
+                command.Parameters.AddWithValue("@CName", Customer.CustomerName);
+                command.Parameters.AddWithValue("@CLName", Customer.CustomerLastName);
+                command.Parameters.AddWithValue("@Email", Customer.Email);
+                command.Parameters.AddWithValue("@PSWD", Customer.Password);
+
+                Console.WriteLine(Customer.CustomerID);
+                Console.WriteLine(Customer.CustomerName);
+                Console.WriteLine(Customer.CustomerLastName);
+                Console.WriteLine(Customer.Email);
+                Console.WriteLine(Customer.Password);
+
+                command.ExecuteNonQuery();
             }
-
-            _context.Customer.Add(Customer);
-            await _context.SaveChangesAsync();
-
             return RedirectToPage("./Index");
         }
     }

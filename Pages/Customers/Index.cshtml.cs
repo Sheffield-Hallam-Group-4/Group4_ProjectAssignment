@@ -21,9 +21,5 @@ namespace Group_Project1.Pages.Customers
 
         public IList<Customer> Customer { get;set; }
 
-        public async Task OnGetAsync()
-        {
-            Customer = await _context.Customer.ToListAsync();
-        }
     }
 }
