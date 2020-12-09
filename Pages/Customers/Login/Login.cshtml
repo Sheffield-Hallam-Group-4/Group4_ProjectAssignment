@@ -1,0 +1,34 @@
+﻿@page
+@model Group_Project1.Pages.Customers.LoginModel
+@{
+}
+<h1>:: Login Page ::</h1>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+
+            <div class="form-group">
+                <label class="control-label">Email</label>
+                <input type="text" asp-for="CustomerReg.Email" class="form-control" />
+                <span asp-validation-for="CustomerReg.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CustomerReg.Password" class="control-label">Password</label>
+                <input asp-for="CustomerReg.Password" type="password" class="form-control" />
+                <span asp-validation-for="CustomerReg.Password" class="text-danger"></span>
+            </div>
+
+            <div>
+                <input type="submit" value="Login" class="btn btn-primary" />
+            </div>
+
+        </form>
+
+        <div>
+            <p style="color: red">@Model.Message</p>
+        </div>
+    </div>
+</div>
+<li><a asp-page="/Customers/Create">Register</a></li>

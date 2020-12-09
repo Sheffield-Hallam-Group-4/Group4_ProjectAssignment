@@ -42,9 +42,12 @@ namespace Group_Project1.Pages.Customers
                 }
 
             }
+
             conn.Close();
+
             return Page();
         }
+
 
         public IActionResult OnPost()
         {
@@ -61,6 +64,7 @@ namespace Group_Project1.Pages.Customers
                 command.Parameters.AddWithValue("@ID", CustomerRec.Id);
                 command.ExecuteNonQuery();
             }
+
             conn.Close();
             return RedirectToPage("./Index");
         }
