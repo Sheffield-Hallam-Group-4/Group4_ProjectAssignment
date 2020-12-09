@@ -12,7 +12,7 @@ namespace Group_Project1.Pages.Customers
 {
     public class IndexModel : PageModel
     {
-        private readonly Group_Project1.Data.Group_Project1Context _context;
+        private readonly Group_Project1Context _context;
 
         public IndexModel(Group_Project1.Data.Group_Project1Context context)
         {

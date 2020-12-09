@@ -7,36 +7,47 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Group_Project.Models;
 using Group_Project1.Data;
+using System.Data.SqlClient;
+using Login_Session.Pages.DatabaseConnection;
+using System.Data.Common;
 
 namespace Group_Project1.Pages.Admins
 {
     public class CreateModel : PageModel
     {
-        private readonly Group_Project1.Data.Group_Project1Context _context;
-
-        public CreateModel(Group_Project1.Data.Group_Project1Context context)
-        {
-            _context = context;
-        }
-
-        public IActionResult OnGet()
-        {
-            return Page();
-        }
-
         [BindProperty]
         public Admin Admin { get; set; }
-
-        public async Task<IActionResult> OnPostAsync()
+        public void OnGet()
         {
-            if (!ModelState.IsValid)
+        }
+
+        public IActionResult OnPost()
+        {
+            DatabaseConnect dbstring = new DatabaseConnect(); //creating an object from the class
+            string DbConnection = dbstring.DatabaseString(); //calling the method from the class
+            Console.WriteLine(DbConnection);
+            SqlConnection conn = new SqlConnection(DbConnection);
+            conn.Open();
+
+            using (SqlCommand command = new SqlCommand())
             {
-                return Page();
+                command.Connection = conn;
+                command.CommandText = @"INSERT INTO Admin (AdminID, AdminName, AdminLastName, Email, Password) VALUES (@AID, @AName, @ALName, @Email, @PSWD)";
+
+                command.Parameters.AddWithValue("@AID", Admin.AdminID);
+                command.Parameters.AddWithValue("@AName", Admin.AdminName);
+                command.Parameters.AddWithValue("@ALName", Admin.AdminLastName);
+                command.Parameters.AddWithValue("@Email", Admin.Email);
+                command.Parameters.AddWithValue("@PSWD", Admin.Password);
+
+                Console.WriteLine(Admin.AdminID);
+                Console.WriteLine(Admin.AdminName);
+                Console.WriteLine(Admin.AdminLastName);
+                Console.WriteLine(Admin.Email);
+                Console.WriteLine(Admin.Password);
+
+                command.ExecuteNonQuery();
             }
-
-            _context.Admin.Add(Admin);
-            await _context.SaveChangesAsync();
-
             return RedirectToPage("./Index");
         }
     }

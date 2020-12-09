@@ -4,57 +4,46 @@
 @{
     ViewData["Title"] = "Index";
 }
+<h1>:: View Admin Page ::</h1>
+<br />
+<br />
 
-<h2>Index</h2>
+<div>
+    <table class="table table-active">
+        <thead>
+            <tr>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Admin[0].AdminID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Admin[0].AdminName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Admin[0].AdminLastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Admin[0].Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Admin[0].Password)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Admin) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AdminID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AdminName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AdminLastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Password)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                <th>
+                    @Html.DisplayNameFor(model => model.AdminRec[0].AdminID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AdminRec[0].AdminName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AdminRec[0].AdminLastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AdminRec[0].Email)
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
+        </thead>
+
+
+        @for (int i = 0; i < Model.AdminRec.Count; i++)
+        {
+            <tr>
+                <td>@Model.AdminRec[i].AdminID</td>
+                <td>@Model.AdminRec[i].AdminName</td>
+                <td>@Model.AdminRec[i].AdminLastName</td>
+                <td>@Model.AdminRec[i].Email</td>
+                <td>
+                    <a asp-page="/Admins/Edit" asp-route-id="@Model.AdminRec[i].Id">Update</a>
+                    <a asp-page="/Admins/Delete" asp-route-id="@Model.AdminRec[i].Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
