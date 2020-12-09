@@ -27,12 +27,10 @@ namespace Group_Project1
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
             services.AddSession(o => {
                 o.IdleTimeout = TimeSpan.FromSeconds(120);//change 120 to any timespan
                 o.Cookie.HttpOnly = true;
                 o.Cookie.IsEssential = true;
-
             });
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -61,7 +59,6 @@ namespace Group_Project1
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

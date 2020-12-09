@@ -15,7 +15,6 @@ namespace Group_Project1.Pages.Customers
     {
         [BindProperty]
         public Customer CustomerReg { get; set; }
-
         public string Message { get; set; }
 
         public string SessionID;
@@ -26,11 +25,6 @@ namespace Group_Project1.Pages.Customers
         }
         public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
 
             DatabaseConnect dbstring = new DatabaseConnect(); //creating an object from the class
             string DbConnection = dbstring.DatabaseString(); //calling the method from the class
@@ -45,7 +39,7 @@ namespace Group_Project1.Pages.Customers
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = conn;
-                command.CommandText = @"SELECT CustomerName, CustomerLastName, Email FROM Customer WHERE Email = @Email AND Password = @PSWD";
+                command.CommandText = @"SELECT CustomerName, CustomerLastName, Email, Password FROM Customer WHERE Email = @Email AND Password = @PSWD";
 
                 command.Parameters.AddWithValue("@Email", CustomerReg.Email);
                 command.Parameters.AddWithValue("@PSWD", CustomerReg.Password);
@@ -54,30 +48,25 @@ namespace Group_Project1.Pages.Customers
 
                 while (reader.Read())
                 {
-                    CustomerReg.CustomerID = reader.GetString(0);
-                    CustomerReg.CustomerName = reader.GetString(1);
-                    CustomerReg.CustomerLastName = reader.GetString(2);
-                    CustomerReg.Email = reader.GetString(3);
+                    CustomerReg.CustomerName = reader.GetString(0);
+                    CustomerReg.CustomerLastName = reader.GetString(1);
+                    CustomerReg.Email = reader.GetString(2);
                 }
-
-
             }
 
             if (!string.IsNullOrEmpty(CustomerReg.CustomerName))
             {
                 SessionID = HttpContext.Session.Id;
                 HttpContext.Session.SetString("sessionID", SessionID);
-                HttpContext.Session.SetString("username", CustomerReg.Email);
-                HttpContext.Session.SetString("fname", CustomerReg.CustomerName);
-
-
+                HttpContext.Session.SetString("Email", CustomerReg.Email);
+                HttpContext.Session.SetString("CustomerName", CustomerReg.CustomerName);
             }
             else
             {
                 Message = "Invalid Username and Password!";
                 return Page();
             }
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Customers/Login/CustomersPage");
         }
     }
 }
