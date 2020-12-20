@@ -1,0 +1,31 @@
+﻿@page
+@model Group_Project1.Pages.UploadFile.UploadFile
+@{
+    <h1>Upload Files Page</h1>
+    <br />
+
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+
+            <div>
+                <label>Select an image file to upload</label>
+                <input type="file" asp-for="File" onchange="readURL(this)" accept="image/*" />
+            </div>
+            <br />
+
+            <div>
+                <label>@Html.DisplayNameFor(model => model.FileRec.Name)</label>
+                <input type="text" asp-for="FileRec.Name" class="form-control" />
+            </div>
+            <br />
+            <div>
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+
+    <br />
+    <div>
+        <img id="Img" src="" alt="User Picture" style="width: 200px;" />
+    </div>
+}

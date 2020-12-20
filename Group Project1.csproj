@@ -49,6 +49,7 @@
     <None Include="Pages\Customers\Login\Login.cshtml" />
     <None Include="Pages\Customers\Login\Logout.cshtml" />
     <None Include="Pages\Customers\Login\ViewCustomer.cshtml" />
+    <None Include="Pages\UploadFile\UploadFile.cshtml" />
   </ItemGroup>
 
 </Project>
